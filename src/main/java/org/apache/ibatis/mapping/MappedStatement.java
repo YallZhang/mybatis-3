@@ -30,6 +30,7 @@ import org.apache.ibatis.session.Configuration;
 
 /**
  * @author Clinton Begin
+ * 代表某mapper.xml文件中的一个insert/upadte/delete/select语句节点
  */
 public final class MappedStatement {
 

@@ -30,6 +30,7 @@ import org.apache.ibatis.session.SqlSession;
 /**
  * @author Clinton Begin
  * @author Eduardo Macarron
+ * MapperProxy实际上是InvocationHandler，用于MapperProxyFactory中动态创建接口代理类
  */
 public class MapperProxy<T> implements InvocationHandler, Serializable {
 
@@ -44,6 +45,10 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
     this.methodCache = methodCache;
   }
 
+
+  /**
+   * MapperMethod.execute是代理方法的实际执行者,内部最终调用sqlSession的curd方法
+   */
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     try {

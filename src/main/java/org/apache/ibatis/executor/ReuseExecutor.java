@@ -35,6 +35,7 @@ import org.apache.ibatis.transaction.Transaction;
 
 /**
  * @author Clinton Begin
+ * 可重用的sql对象执行器[预编译的]
  */
 public class ReuseExecutor extends BaseExecutor {
 
@@ -85,6 +86,8 @@ public class ReuseExecutor extends BaseExecutor {
       stmt = getStatement(sql);
       applyTransactionTimeout(stmt);
     } else {
+      //创建PrepareStatement/CallableStatement/Statement
+      //由StatementHandler设置sql的参数化类型
       Connection connection = getConnection(statementLog);
       stmt = handler.prepare(connection, transaction.getTimeout());
       putStatement(sql, stmt);

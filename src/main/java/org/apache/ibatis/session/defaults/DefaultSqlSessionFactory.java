@@ -44,6 +44,8 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
 
   @Override
   public SqlSession openSession() {
+    //根据mybatis配置文件中配置的默认ExecutorType创建执行器，进而创建SqlSession
+    //<setting name = "defaultExecutorType" value = "REUSE" / >
     return openSessionFromDataSource(configuration.getDefaultExecutorType(), null, false);
   }
 
@@ -90,9 +92,16 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
   private SqlSession openSessionFromDataSource(ExecutorType execType, TransactionIsolationLevel level, boolean autoCommit) {
     Transaction tx = null;
     try {
+      //从配置文件configuration中读取Environment[包含数据源、事务]
       final Environment environment = configuration.getEnvironment();
+
+      //如果是用的mybatis和spring结合的事务,则先从SqlSessionFactoryBean中获取SqlSessionFactoryBean
+      //所维持的SpringManagedTransactionFactory,SpringManagedTransaction主要用于获取DataSourceTransactionManager所维持的ConnectionHolder
+      //中的Connection，以便在SqlSession在真正执行sql时获取和DataSourceTransactionManager同样的Connection
       final TransactionFactory transactionFactory = getTransactionFactoryFromEnvironment(environment);
       tx = transactionFactory.newTransaction(environment.getDataSource(), level, autoCommit);
+      //根据execType创建sql执行器，Executor是sql执行的实际发出者，内部包含jdbc-statement
+      //SimpleExecutor会去调用transaction.getConnection获取连接，可以查看SpringManagedTransaction是怎么实现的getConn()
       final Executor executor = configuration.newExecutor(tx, execType);
       return new DefaultSqlSession(configuration, executor, autoCommit);
     } catch (Exception e) {

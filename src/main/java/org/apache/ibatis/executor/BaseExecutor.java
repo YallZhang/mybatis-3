@@ -46,6 +46,7 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
  * @author Clinton Begin
+ * 采用模板模式：实现部分方法，其它的query..交由子类实现
  */
 public abstract class BaseExecutor implements Executor {
 
@@ -56,6 +57,7 @@ public abstract class BaseExecutor implements Executor {
 
   protected ConcurrentLinkedQueue<DeferredLoad> deferredLoads;
   protected PerpetualCache localCache;
+  //存储过程out参数缓存
   protected PerpetualCache localOutputParameterCache;
   protected Configuration configuration;
 
@@ -131,6 +133,10 @@ public abstract class BaseExecutor implements Executor {
 
   @Override
   public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler) throws SQLException {
+
+    //将(#{parameter1},#{parameter2})替换为(?,?)后的BoundSql对象
+    //创建本地缓存key
+    //抽象模板模式：具体query(..)交由子类实现
     BoundSql boundSql = ms.getBoundSql(parameter);
     CacheKey key = createCacheKey(ms, parameter, rowBounds, boundSql);
     return query(ms, parameter, rowBounds, resultHandler, key, boundSql);

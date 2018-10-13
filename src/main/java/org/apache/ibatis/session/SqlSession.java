@@ -28,6 +28,7 @@ import org.apache.ibatis.executor.BatchResult;
  * Through this interface you can execute commands, get mappers and manage transactions.
  *
  * @author Clinton Begin
+ * mybatis中一切sql动作都是由sqlSession“发出”的，如直接根据sql-id执行sql语句，或通过sqlsession获取mapper接口实例。
  */
 public interface SqlSession extends Closeable {
 
